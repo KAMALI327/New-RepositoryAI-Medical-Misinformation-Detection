@@ -1,4 +1,5 @@
-import { useEffect, useState, ChangeEvent } from "react";
+import { useEffect, useState } from "react";
+import type { ChangeEvent } from "react";
 import axios from "axios";
 
 import {
@@ -12,7 +13,7 @@ import {
   YAxis,
   CartesianGrid,
   Legend,
-  ResponsiveContainer,
+  ResponsiveContainer
 } from "recharts";
 
 interface PredictionResult {
@@ -35,13 +36,16 @@ function App() {
   const [result, setResult] = useState<PredictionResult | null>(null);
   const [history, setHistory] = useState<HistoryItem[]>([]);
 
+  // Backend URL
+  const API_URL = "https://your-backend-url.onrender.com";
+
   // Fetch history
   const fetchHistory = async () => {
 
     try {
 
       const response = await axios.get<HistoryItem[]>(
-        "http://127.0.0.1:8000/history"
+        `${API_URL}/history`
       );
 
       setHistory(response.data);
@@ -53,16 +57,20 @@ function App() {
   };
 
   useEffect(() => {
-    fetchHistory();
+    const loadHistory = async () => {
+      await fetchHistory();
+    };
+
+    void loadHistory();
   }, []);
 
-  // Analyze claim
+  // Analyze medical claim
   const analyzeNews = async () => {
 
     try {
 
       const response = await axios.post<PredictionResult>(
-        "http://127.0.0.1:8000/predict",
+        `${API_URL}/predict`,
         {
           text: text,
         }
@@ -142,7 +150,7 @@ function App() {
           🩺 AI Medical Misinformation Dashboard
         </h1>
 
-        {/* Input Card */}
+        {/* Input Section */}
         <div
           style={{
             background: "white",
@@ -184,7 +192,7 @@ function App() {
             Analyze Claim
           </button>
 
-          {/* Result */}
+          {/* Prediction Result */}
           {result && (
 
             <div
@@ -216,7 +224,7 @@ function App() {
 
         </div>
 
-        {/* Charts */}
+        {/* Charts Section */}
         <div
           style={{
             display: "grid",
@@ -236,7 +244,7 @@ function App() {
             }}
           >
 
-            <h2>Fake vs Real</h2>
+            <h2>Fake vs Real Analysis</h2>
 
             <ResponsiveContainer width="100%" height={300}>
 
@@ -250,7 +258,6 @@ function App() {
                 >
 
                   <Cell fill="#ef5350" />
-
                   <Cell fill="#66bb6a" />
 
                 </Pie>
@@ -263,7 +270,7 @@ function App() {
 
           </div>
 
-          {/* Bar Chart */}
+          {/* Risk Bar Chart */}
           <div
             style={{
               background: "white",
@@ -273,7 +280,7 @@ function App() {
             }}
           >
 
-            <h2>Risk Levels</h2>
+            <h2>Risk Level Analytics</h2>
 
             <ResponsiveContainer width="100%" height={300}>
 
@@ -289,7 +296,10 @@ function App() {
 
                 <Legend />
 
-                <Bar dataKey="count" fill="#1565c0" />
+                <Bar
+                  dataKey="count"
+                  fill="#1565c0"
+                />
 
               </BarChart>
 
@@ -329,13 +339,21 @@ function App() {
                 }}
               >
 
-                <th style={{ padding: "12px" }}>Text</th>
+                <th style={{ padding: "12px" }}>
+                  Text
+                </th>
 
-                <th style={{ padding: "12px" }}>Prediction</th>
+                <th style={{ padding: "12px" }}>
+                  Prediction
+                </th>
 
-                <th style={{ padding: "12px" }}>Confidence</th>
+                <th style={{ padding: "12px" }}>
+                  Confidence
+                </th>
 
-                <th style={{ padding: "12px" }}>Risk</th>
+                <th style={{ padding: "12px" }}>
+                  Risk
+                </th>
 
               </tr>
 
@@ -347,19 +365,39 @@ function App() {
 
                 <tr key={item.id}>
 
-                  <td style={{ padding: "12px", borderBottom: "1px solid #ddd" }}>
+                  <td
+                    style={{
+                      padding: "12px",
+                      borderBottom: "1px solid #ddd",
+                    }}
+                  >
                     {item.text}
                   </td>
 
-                  <td style={{ padding: "12px", borderBottom: "1px solid #ddd" }}>
+                  <td
+                    style={{
+                      padding: "12px",
+                      borderBottom: "1px solid #ddd",
+                    }}
+                  >
                     {item.prediction}
                   </td>
 
-                  <td style={{ padding: "12px", borderBottom: "1px solid #ddd" }}>
+                  <td
+                    style={{
+                      padding: "12px",
+                      borderBottom: "1px solid #ddd",
+                    }}
+                  >
                     {item.confidence}%
                   </td>
 
-                  <td style={{ padding: "12px", borderBottom: "1px solid #ddd" }}>
+                  <td
+                    style={{
+                      padding: "12px",
+                      borderBottom: "1px solid #ddd",
+                    }}
+                  >
                     {item.risk_level}
                   </td>
 
